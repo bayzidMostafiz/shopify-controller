@@ -6,7 +6,21 @@ const path = require('path');
 
 const app = express();
 const PORT = 3500;
-const DB_PATH = path.join(__dirname, 'data', 'db.json');
+
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+const DB_PATH = isProduction
+  ? path.join('/tmp', 'db.json')
+  : path.join(__dirname, 'data', 'db.json');
+
+// Ensure db.json is bundled and copied to /tmp in serverless environment
+if (isProduction && !fs.existsSync(DB_PATH)) {
+  try {
+    const initialData = require('./data/db.json');
+    fs.writeFileSync(DB_PATH, JSON.stringify(initialData, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Failed to initialize DB in /tmp:', err.message);
+  }
+}
 
 // Middleware
 app.use(cors());
@@ -16,12 +30,27 @@ app.use('/embed', express.static(path.join(__dirname, '..', 'embed')));
 
 // ============ HELPERS ============
 function readDB() {
-  const data = fs.readFileSync(DB_PATH, 'utf-8');
-  return JSON.parse(data);
+  if (global.inMemoryDB) {
+    return global.inMemoryDB;
+  }
+  try {
+    if (fs.existsSync(DB_PATH)) {
+      const data = fs.readFileSync(DB_PATH, 'utf-8');
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error('Read DB error:', err.message);
+  }
+  return require('./data/db.json');
 }
 
 function writeDB(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  global.inMemoryDB = data; // Always keep in-memory sync
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Write DB error:', err.message);
+  }
 }
 
 function getDefaultSettings() {
