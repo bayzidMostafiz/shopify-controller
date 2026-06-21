@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const { kv } = require('@vercel/kv');
+const { createClient } = require('@vercel/kv');
 
 const app = express();
 const PORT = 3500;
@@ -38,6 +38,21 @@ if (isProduction && !fs.existsSync(DB_PATH)) {
   }
 }
 
+// Initialize Vercel KV or Upstash client dynamically
+let kvClient = null;
+if (isProduction) {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (url && token) {
+    try {
+      kvClient = createClient({ url, token });
+      console.log('KV/Upstash Database Client initialized successfully.');
+    } catch (err) {
+      console.error('Failed to initialize KV Client:', err.message);
+    }
+  }
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
@@ -46,9 +61,9 @@ app.use('/embed', express.static(path.join(__dirname, '..', 'embed')));
 
 // ============ HELPERS ============
 async function readDB() {
-  if (isProduction && process.env.KV_REST_API_URL) {
+  if (isProduction && kvClient) {
     try {
-      const data = await kv.get('shopify_controller_db');
+      const data = await kvClient.get('shopify_controller_db');
       if (data) {
         global.inMemoryDB = data; // Keep in-memory sync
         return data;
@@ -75,9 +90,9 @@ async function readDB() {
 async function writeDB(data) {
   global.inMemoryDB = data; // Always keep in-memory sync
   
-  if (isProduction && process.env.KV_REST_API_URL) {
+  if (isProduction && kvClient) {
     try {
-      await kv.set('shopify_controller_db', data);
+      await kvClient.set('shopify_controller_db', data);
       return;
     } catch (err) {
       console.error('Vercel KV Write error:', err.message);

@@ -2,13 +2,108 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const { kv } = require('@vercel/kv');
+const { createClient } = require('@vercel/kv');
 
 const app = express();
 const PORT = 3500;
 
 function generateId() {
   return Math.random().toString(36).substring(2, 10);
+}
+
+const DEFAULT_DB = {
+  users: [
+    {
+      id: "admin-001",
+      email: "bayazid416@gmail.com",
+      password: "admin123",
+      name: "Admin",
+      role: "super_admin"
+    }
+  ],
+  projects: []
+};
+
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+const DB_PATH = isProduction
+  ? path.join('/tmp', 'db.json')
+  : path.join(__dirname, '..', 'server', 'data', 'db.json');
+
+// Ensure db.json is initialized in /tmp in serverless environment
+if (isProduction && !fs.existsSync(DB_PATH)) {
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(DEFAULT_DB, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Failed to initialize DB in /tmp:', err.message);
+  }
+}
+
+// Initialize Vercel KV or Upstash client dynamically
+let kvClient = null;
+if (isProduction) {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (url && token) {
+    try {
+      kvClient = createClient({ url, token });
+      console.log('KV/Upstash Database Client initialized successfully.');
+    } catch (err) {
+      console.error('Failed to initialize KV Client:', err.message);
+    }
+  }
+}
+
+// Middleware
+app.use(cors());
+app.use(express.json({ limit: '2mb' }));
+app.use('/dashboard', express.static(path.join(__dirname, '..', 'dashboard')));
+app.use('/embed', express.static(path.join(__dirname, '..', 'embed')));
+
+// ============ HELPERS ============
+async function readDB() {
+  if (isProduction && kvClient) {
+    try {
+      const data = await kvClient.get('shopify_controller_db');
+      if (data) {
+        global.inMemoryDB = data; // Keep in-memory sync
+        return data;
+      }
+    } catch (err) {
+      console.error('Vercel KV Read error:', err.message);
+    }
+  }
+
+  if (global.inMemoryDB) {
+    return global.inMemoryDB;
+  }
+  try {
+    if (fs.existsSync(DB_PATH)) {
+      const data = fs.readFileSync(DB_PATH, 'utf-8');
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error('Read DB error:', err.message);
+  }
+  return DEFAULT_DB;
+}
+
+async function writeDB(data) {
+  global.inMemoryDB = data; // Always keep in-memory sync
+  
+  if (isProduction && kvClient) {
+    try {
+      await kvClient.set('shopify_controller_db', data);
+      return;
+    } catch (err) {
+      console.error('Vercel KV Write error:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Write DB error:', err.message);
+  }
 }
 
 const DEFAULT_DB = {
