@@ -2,7 +2,7 @@
   "name": "shopify-controller",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
     "start": "node server/server.js",
     "dev": "node server/server.js"
