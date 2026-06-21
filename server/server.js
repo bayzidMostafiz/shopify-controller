@@ -7,16 +7,28 @@ const path = require('path');
 const app = express();
 const PORT = 3500;
 
+const DEFAULT_DB = {
+  users: [
+    {
+      id: "admin-001",
+      email: "bayazid416@gmail.com",
+      password: "admin123",
+      name: "Admin",
+      role: "super_admin"
+    }
+  ],
+  projects: []
+};
+
 const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
 const DB_PATH = isProduction
   ? path.join('/tmp', 'db.json')
   : path.join(__dirname, 'data', 'db.json');
 
-// Ensure db.json is bundled and copied to /tmp in serverless environment
+// Ensure db.json is initialized in /tmp in serverless environment
 if (isProduction && !fs.existsSync(DB_PATH)) {
   try {
-    const initialData = require('./data/db.json');
-    fs.writeFileSync(DB_PATH, JSON.stringify(initialData, null, 2), 'utf-8');
+    fs.writeFileSync(DB_PATH, JSON.stringify(DEFAULT_DB, null, 2), 'utf-8');
   } catch (err) {
     console.error('Failed to initialize DB in /tmp:', err.message);
   }
@@ -41,7 +53,7 @@ function readDB() {
   } catch (err) {
     console.error('Read DB error:', err.message);
   }
-  return require('./data/db.json');
+  return DEFAULT_DB;
 }
 
 function writeDB(data) {
