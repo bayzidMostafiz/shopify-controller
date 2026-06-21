@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server/server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "dashboard/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "embed/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/dashboard/(.*)",
+      "dest": "dashboard/$1"
+    },
+    {
+      "src": "/embed/(.*)",
+      "dest": "embed/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "server/server.js"
+    },
+    {
+      "src": "/",
+      "dest": "server/server.js"
+    }
+  ]
+}

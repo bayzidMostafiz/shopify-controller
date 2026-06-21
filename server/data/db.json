@@ -1,0 +1,291 @@
+{
+  "users": [
+    {
+      "id": "admin-001",
+      "email": "bayazid416@gmail.com",
+      "password": "admin123",
+      "name": "Admin",
+      "role": "super_admin"
+    },
+    {
+      "id": "9aa1eae7",
+      "name": "Test Manager",
+      "email": "test@manager.com",
+      "password": "manager456",
+      "role": "user"
+    }
+  ],
+  "projects": [
+    {
+      "id": "232ed5c6",
+      "userId": "admin-001",
+      "name": "ShopVibe",
+      "url": "http://localhost:3500",
+      "createdAt": "2026-06-21T05:43:24.427Z",
+      "settings": {
+        "cartButton": {
+          "disabled": true
+        },
+        "checkout": {
+          "disabled": true,
+          "blockedMessage": "Checkout is currently unavailable."
+        },
+        "homeBlocks": {
+          "detectedSections": [
+            {
+              "id": "shopify-section-sections--20844505792701__annoucement",
+              "name": "Sections  20844505792701  Annoucement",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-sections--20844505792701__header",
+              "name": "MINIMOG",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__1621243260e1af0c20",
+              "name": "Ultimate Winter\nWarmer",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__16225316461d1cff80",
+              "name": "Shop by Categories",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__featured_collection_QrnC6H",
+              "name": "Featured collection",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__162251092958fcda7c",
+              "name": "You are in",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__7ea56e8d-5794-4708-8812-8ee9604a3a21",
+              "name": "The ReLeather Beige Tennis Shoe",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__lookbook_MB4Mr4",
+              "name": "Check out mix & match",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__scrolling_promotion_jjrFyf",
+              "name": "Template  20844505563325  Scrolling Promotion JjrFyf",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__collection_tabs_QE4TLj",
+              "name": "Beautifully functional consciously crafted",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__brands_list_XfN79B",
+              "name": "Featured in Press",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__custom_content_xALaMf",
+              "name": "Template  20844505563325  Custom Content XALaMf",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__custom_content_f3reLw",
+              "name": "The Coastal Edition",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__custom_content_btgYN3",
+              "name": "Template  20844505563325  Custom Content BtgYN3",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__custom_content_hh6hmV",
+              "name": "Living out every single day and  be brave to show off you...",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__collection_list_tjXYY7",
+              "name": "Top\n                \n                  12",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__custom_content_KiFzqG",
+              "name": "Layer up with \npieces designed",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__testimonials_pnyUnX",
+              "name": "Happy Customers",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__gallery_LXcceh",
+              "name": "Follow us Instagram",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__16225125199f82d8fe",
+              "name": "Free Shipping",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-template--20844505563325__custom_popup_tow_hh966U",
+              "name": "Template  20844505563325  Custom Popup Tow Hh966U",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-sections--20844505825469__footer",
+              "name": "Let’s get in touch",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-sections--20844505825469__mobile-sticky-bar",
+              "name": "Sections  20844505825469  Mobile Sticky Bar",
+              "tagName": "div",
+              "hidden": false
+            },
+            {
+              "id": "shopify-section-sections--20844505825469__age-verifier-popup",
+              "name": "Confirm your age",
+              "tagName": "div",
+              "hidden": false
+            }
+          ],
+          "hiddenSectionIds": []
+        },
+        "announcement": {
+          "enabled": false,
+          "text": "Welcome to our store!",
+          "bgColor": "#000000",
+          "textColor": "#ffffff",
+          "dismissible": true
+        },
+        "customCSS": {
+          "enabled": false,
+          "code": ""
+        },
+        "popup": {
+          "enabled": false,
+          "title": "Special Offer!",
+          "message": "Get 20% off your first order!",
+          "buttonText": "Shop Now",
+          "buttonUrl": "/",
+          "delay": 3,
+          "bgColor": "#ffffff",
+          "textColor": "#333333",
+          "overlayColor": "rgba(0,0,0,0.5)"
+        },
+        "passwordProtection": {
+          "enabled": false,
+          "password": "12356",
+          "protectAllPages": true,
+          "detectedPages": [
+            {
+              "path": "/collections/all",
+              "title": "Catalog",
+              "protected": false
+            },
+            {
+              "path": "/pages/contact",
+              "title": "Contact",
+              "protected": false
+            },
+            {
+              "path": "/customer_authentication/redirect",
+              "title": "Log in",
+              "protected": false
+            },
+            {
+              "path": "/pages/wishlist",
+              "title": "Wishlist\n      \n    \n    0",
+              "protected": false
+            },
+            {
+              "path": "/collections/t-shirt",
+              "title": "T-shirt",
+              "protected": false
+            }
+          ],
+          "protectedPages": [],
+          "message": "This page is password protected."
+        }
+      }
+    },
+    {
+      "id": "6d579825",
+      "userId": "admin-001",
+      "name": "uzairmunir91",
+      "url": "",
+      "createdAt": "2026-06-21T06:33:20.810Z",
+      "settings": {
+        "cartButton": {
+          "disabled": false
+        },
+        "checkout": {
+          "disabled": false,
+          "blockedMessage": "Checkout is currently unavailable."
+        },
+        "homeBlocks": {
+          "detectedSections": [],
+          "hiddenSectionIds": []
+        },
+        "announcement": {
+          "enabled": false,
+          "text": "Welcome to our store!",
+          "bgColor": "#000000",
+          "textColor": "#ffffff",
+          "dismissible": true
+        },
+        "customCSS": {
+          "enabled": false,
+          "code": ""
+        },
+        "popup": {
+          "enabled": false,
+          "title": "Special Offer!",
+          "message": "Get 20% off your first order!",
+          "buttonText": "Shop Now",
+          "buttonUrl": "/",
+          "delay": 3,
+          "bgColor": "#ffffff",
+          "textColor": "#333333",
+          "overlayColor": "rgba(0,0,0,0.5)"
+        },
+        "passwordProtection": {
+          "enabled": false,
+          "password": "",
+          "protectAllPages": false,
+          "detectedPages": [],
+          "protectedPages": [],
+          "message": "This page is password protected."
+        }
+      }
+    }
+  ]
+}

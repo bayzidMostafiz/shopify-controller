@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopController - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============ LOGIN PAGE ============ -->
+  <div id="loginPage" class="login-wrapper">
+    <div class="login-card">
+      <div class="logo">
+        <h1>ShopController</h1>
+        <p>Control your Shopify store remotely</p>
+      </div>
+      <div id="loginError" class="login-error">Invalid email or password</div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="admin@shopcontrol.com" required value="admin@shopcontrol.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter password" required value="admin123">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+      </form>
+    </div>
+    <div class="developer-footer" style="border-top: none; margin-top: 24px;">
+      <span>Develop By: <a href="https://bayzidmostafiz.com/" target="_blank">Md. Bayzid Mostafiz</a></span>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/bayazid416" target="_blank" class="social-icon-btn"><i class="fab fa-facebook"></i></a>
+        <a href="https://www.instagram.com/bayzid_mostafiz00/" target="_blank" class="social-icon-btn"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.linkedin.com/in/md-bayzid-mostafiz-152b80139/" target="_blank" class="social-icon-btn"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div id="dashboardPage" class="dashboard" style="display:none;">
+    
+    <aside class="sidebar">
+      <div class="brand">
+        <h2>ShopController</h2>
+        <small>Store Remote Control</small>
+      </div>
+      <nav>
+        <a href="#" class="active" data-page="projects">
+          <span class="icon">📦</span> Projects
+        </a>
+        <a href="#" data-page="settings" id="settingsNavLink" style="display:none;">
+          <span class="icon">⚙️</span> Settings
+        </a>
+        <a href="#" data-page="embed" id="embedNavLink" style="display:none;">
+          <span class="icon">📋</span> Embed Code
+        </a>
+        <a href="#" data-page="users" id="usersNavLink" style="display:none;">
+          <span class="icon">👥</span> Users
+        </a>
+        <a href="#" data-page="profile" id="profileNavLink">
+          <span class="icon">👤</span> Profile
+        </a>
+      </nav>
+      <div class="user-info">
+        <div class="avatar" id="userAvatar">A</div>
+        <div class="details">
+          <div class="name" id="userName">Admin</div>
+          <div class="email" id="userEmail">admin@shopcontrol.com</div>
+        </div>
+        <button class="logout-btn" id="logoutBtn" title="Logout">⬅️</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+
+      <!-- ======= PROJECTS PAGE ======= -->
+      <div id="projectsPage" class="page active">
+        <div class="page-header">
+          <div>
+            <h1>My Projects</h1>
+            <p>Manage your Shopify store controllers</p>
+          </div>
+        </div>
+        <div class="projects-grid" id="projectsGrid">
+          <div class="add-project-card" id="addProjectBtn">
+            <span class="plus">+</span>
+            <span>Add New Project</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= SETTINGS PAGE ======= -->
+      <div id="settingsPage" class="page" style="display:none;">
+        <button class="back-btn" id="backToProjects">← Back to Projects</button>
+        <div class="page-header">
+          <div>
+            <h1 id="settingsProjectName">Project Settings</h1>
+            <p>Control your Shopify store features</p>
+          </div>
+          <div class="save-float">
+            <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+          </div>
+        </div>
+
+        <div class="settings-tabs">
+          <button class="active" data-tab="cart">🛒 Cart</button>
+          <button data-tab="checkout">💳 Checkout</button>
+          <button data-tab="home-blocks">🏠 Home Blocks</button>
+          <button data-tab="announcement">📢 Announcement</button>
+          <button data-tab="custom-css">🎨 Custom CSS</button>
+          <button data-tab="popup">🪟 Popup</button>
+          <button data-tab="password">🔐 Password</button>
+        </div>
+
+        <!-- === CART === -->
+        <div class="settings-section active" data-section="cart">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>
+                <span class="setting-icon" style="background: var(--danger-light);">🛒</span>
+                Disable Cart Button
+              </h3>
+              <label class="toggle">
+                <input type="checkbox" id="cartDisabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="desc">Turn ON to <strong>hide</strong> all "Add to Cart" buttons from your store. Customers won't be able to add products to their cart.</p>
+            <div class="block-item" style="margin-top: 12px; background: var(--danger-light); border-color: transparent;">
+              <span class="block-name" style="font-size:13px; color: var(--danger);" id="cartStatusText">Status: Cart buttons are VISIBLE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- === CHECKOUT === -->
+        <div class="settings-section" data-section="checkout">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>
+                <span class="setting-icon" style="background: var(--danger-light);">💳</span>
+                Disable Checkout
+              </h3>
+              <label class="toggle">
+                <input type="checkbox" id="checkoutDisabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="desc">Turn ON to <strong>block</strong> the checkout process. Customers will see a custom message instead of the checkout page.</p>
+            <div class="form-group" style="margin-top: 12px;">
+              <label>Blocked Message</label>
+              <input type="text" id="checkoutMessage" placeholder="Checkout is currently unavailable.">
+            </div>
+            <div class="block-item" style="margin-top: 8px; background: var(--danger-light); border-color: transparent;">
+              <span class="block-name" style="font-size:13px; color: var(--danger);" id="checkoutStatusText">Status: Checkout is ENABLED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- === HOME BLOCKS (auto-detected) === -->
+        <div class="settings-section" data-section="home-blocks">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>
+                <span class="setting-icon" style="background: var(--success-light);">🏠</span>
+                Home Page Sections
+              </h3>
+              <button class="btn btn-sm btn-outline" id="refreshSectionsBtn">Refresh</button>
+            </div>
+            <p class="desc">These sections were <strong>auto-detected</strong> from your live website. Toggle ON to <strong>hide</strong> a section from your home page.</p>
+            
+            <div id="detectedSectionsList" class="blocks-list">
+              <!-- Auto-populated from detected sections -->
+            </div>
+            <div id="noSectionsMsg" class="empty-state" style="padding: 32px 20px; display:none;">
+              <div class="icon" style="font-size:40px;">🔍</div>
+              <h3 style="font-size:16px;">No sections detected yet</h3>
+              <p style="font-size:13px;">Make sure the embed code is installed on your Shopify theme and visit your store's home page once. Then click "Refresh".</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- === ANNOUNCEMENT === -->
+        <div class="settings-section" data-section="announcement">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>
+                <span class="setting-icon" style="background: var(--warning-light);">📢</span>
+                Announcement Bar
+              </h3>
+              <label class="toggle">
+                <input type="checkbox" id="announcementEnabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="desc">Turn ON to show a customizable announcement bar at the top of your store.</p>
+            <div class="form-group">
+              <label>Announcement Text</label>
+              <input type="text" id="announcementText" placeholder="Welcome to our store!">
+            </div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+              <div class="form-group" style="flex:1; min-width: 200px;">
+                <label>Background Color</label>
+                <div class="color-input-group">
+                  <input type="color" id="announcementBg" value="#000000">
+                  <input type="text" id="announcementBgText" value="#000000" style="flex:1;">
+                </div>
+              </div>
+              <div class="form-group" style="flex:1; min-width: 200px;">
+                <label>Text Color</label>
+                <div class="color-input-group">
+                  <input type="color" id="announcementColor" value="#ffffff">
+                  <input type="text" id="announcementColorText" value="#ffffff" style="flex:1;">
+                </div>
+              </div>
+            </div>
+            <div class="block-item" style="margin-top: 8px;">
+              <span class="block-name">Dismissible (allow close)</span>
+              <label class="toggle"><input type="checkbox" id="announcementDismissible" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- === CUSTOM CSS === -->
+        <div class="settings-section" data-section="custom-css">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>
+                <span class="setting-icon" style="background: var(--primary-light);">🎨</span>
+                Custom CSS
+              </h3>
+              <label class="toggle">
+                <input type="checkbox" id="cssEnabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="desc">Turn ON to inject custom CSS into your store.</p>
+            <div class="form-group">
+              <label>CSS Code</label>
+              <textarea id="cssCode" rows="10" placeholder="/* Your custom CSS here */&#10;.header { background: #333; }" style="font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- === POPUP === -->
+        <div class="settings-section" data-section="popup">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>
+                <span class="setting-icon" style="background: var(--success-light);">🪟</span>
+                Custom Popup
+              </h3>
+              <label class="toggle">
+                <input type="checkbox" id="popupEnabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="desc">Turn ON to show a custom popup to visitors.</p>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" id="popupTitle" placeholder="Special Offer!">
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="popupMessage" rows="3" placeholder="Get 20% off your first order!"></textarea>
+            </div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+              <div class="form-group" style="flex:1; min-width: 200px;">
+                <label>Button Text</label>
+                <input type="text" id="popupButtonText" placeholder="Shop Now">
+              </div>
+              <div class="form-group" style="flex:1; min-width: 200px;">
+                <label>Button URL</label>
+                <input type="text" id="popupButtonUrl" placeholder="/">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Delay (seconds)</label>
+              <input type="number" id="popupDelay" value="3" min="0" max="60">
+            </div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+              <div class="form-group" style="flex:1; min-width: 150px;">
+                <label>Background Color</label>
+                <div class="color-input-group">
+                  <input type="color" id="popupBg" value="#ffffff">
+                  <input type="text" id="popupBgText" value="#ffffff" style="flex:1;">
+                </div>
+              </div>
+              <div class="form-group" style="flex:1; min-width: 150px;">
+                <label>Text Color</label>
+                <div class="color-input-group">
+                  <input type="color" id="popupColor" value="#333333">
+                  <input type="text" id="popupColorText" value="#333333" style="flex:1;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === PASSWORD PROTECTION (auto-detected pages) === -->
+        <div class="settings-section" data-section="password">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>
+                <span class="setting-icon" style="background: var(--danger-light);">🔐</span>
+                Password Protection
+              </h3>
+              <label class="toggle">
+                <input type="checkbox" id="passwordEnabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="desc">Turn ON to protect pages with a password. Select specific pages below or protect your entire store.</p>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="text" id="passwordValue" placeholder="Enter password for protected pages">
+            </div>
+            <div class="form-group">
+              <label>Custom Message</label>
+              <input type="text" id="passwordMessage" placeholder="This page is password protected.">
+            </div>
+            <div class="block-item" style="margin-bottom: 16px;">
+              <span class="block-name"><span class="block-icon">🌐</span> Protect All Pages</span>
+              <label class="toggle"><input type="checkbox" id="passwordAllPages"><span class="slider"></span></label>
+            </div>
+            
+            <div id="specificPagesSection">
+              <!-- Auto-detected pages -->
+              <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-muted);">
+                Auto-Detected Pages
+                <button class="btn btn-sm btn-outline" id="refreshPagesBtn" style="margin-left: 12px;">Refresh</button>
+              </h4>
+              <div id="detectedPagesList" class="blocks-list" style="margin-bottom: 20px;">
+                <!-- Auto-populated -->
+              </div>
+              <div id="noPagesMsg" style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 13px; display:none;">
+                No pages detected yet. Install the embed code and visit your store to scan pages.
+              </div>
+
+              <h4 style="font-size: 14px; font-weight: 600; margin: 20px 0 12px; color: var(--text-muted);">Manual Pages (press Enter to add)</h4>
+              <div class="tags-input" id="protectedPagesInput">
+                <input type="text" placeholder="/collections/secret, /pages/vip, /products/*" id="pageTagInput">
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Use * wildcard: /products/* protects all product pages</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= EMBED CODE PAGE ======= -->
+      <div id="embedPage" class="page" style="display:none;">
+        <button class="back-btn" id="backToProjectsFromEmbed">← Back to Projects</button>
+        <div class="page-header">
+          <div>
+            <h1>Embed Code</h1>
+            <p>Add this code to your Shopify theme</p>
+          </div>
+        </div>
+        <div class="setting-card">
+          <h3 style="margin-bottom: 12px;">Installation Instructions</h3>
+          <p class="desc">Follow these steps to connect your Shopify store:</p>
+          <ol style="color: var(--text-muted); font-size: 14px; line-height: 2.2; padding-left: 20px;">
+            <li>Go to your Shopify Admin > <strong>Online Store</strong> > <strong>Themes</strong></li>
+            <li>Click <strong>Actions</strong> > <strong>Edit code</strong></li>
+            <li>Open <strong>theme.liquid</strong> file</li>
+            <li>Paste the embed code below just before the closing <code style="background: var(--bg-input); padding: 2px 8px; border-radius: 4px;">&lt;/body&gt;</code> tag</li>
+            <li>Click <strong>Save</strong></li>
+            <li><strong>Visit your store home page once</strong> so sections and pages get auto-detected</li>
+          </ol>
+        </div>
+        <div class="setting-card" style="margin-top: 20px;">
+          <h3 style="margin-bottom: 16px;">Your Embed Code</h3>
+          <div class="embed-code" id="embedCodeBlock">
+            <button class="copy-btn" id="copyEmbedBtn">Copy</button>
+            <code id="embedCodeText"></code>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= USER MANAGEMENT PAGE ======= -->
+      <div id="usersPage" class="page" style="display:none;">
+        <div class="page-header">
+          <div>
+            <h1>User Management</h1>
+            <p>Manage admin and manager accounts</p>
+          </div>
+          <div>
+            <button class="btn btn-primary" id="addUserBtn" style="width: auto;">➕ Add New User</button>
+          </div>
+        </div>
+
+        <div class="setting-card">
+          <div class="blocks-list" id="usersList" style="margin-top: 10px;">
+            <!-- Users populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= PROFILE PAGE ======= -->
+      <div id="profilePage" class="page" style="display:none;">
+        <div class="page-header">
+          <div>
+            <h1>My Profile</h1>
+            <p>Manage your account settings and password</p>
+          </div>
+        </div>
+
+        <div class="setting-card" style="max-width: 500px; margin-bottom: 20px;">
+          <h3 style="margin-bottom: 20px;">Account Information</h3>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="profileName" readonly style="opacity: 0.7; cursor: not-allowed;">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="text" id="profileEmail" readonly style="opacity: 0.7; cursor: not-allowed;">
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <input type="text" id="profileRole" readonly style="opacity: 0.7; cursor: not-allowed;">
+          </div>
+        </div>
+
+        <div class="setting-card" style="max-width: 500px;">
+          <h3 style="margin-bottom: 20px;">Change Password</h3>
+          <form id="changePasswordForm">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="currentPassword" required>
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="newPassword" required>
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" id="confirmNewPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: auto;">Update Password</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Developer Footer (Dashboard pages) -->
+      <div class="developer-footer">
+        <span>Develop By: <a href="https://bayzidmostafiz.com/" target="_blank">Md. Bayzid Mostafiz</a></span>
+        <div class="social-icons">
+          <a href="https://www.facebook.com/bayazid416" target="_blank" class="social-icon-btn"><i class="fab fa-facebook"></i></a>
+          <a href="https://www.instagram.com/bayzid_mostafiz00/" target="_blank" class="social-icon-btn"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.linkedin.com/in/md-bayzid-mostafiz-152b80139/" target="_blank" class="social-icon-btn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ============ MODALS ============ -->
+  <div class="modal-overlay" id="addProjectModal">
+    <div class="modal">
+      <h2>Add New Project <button class="close-modal" data-close="addProjectModal">&times;</button></h2>
+      <form id="addProjectForm">
+        <div class="form-group">
+          <label>Project Name</label>
+          <input type="text" id="projectName" placeholder="My Shopify Store" required>
+        </div>
+        <div class="form-group">
+          <label>Store URL (optional)</label>
+          <input type="text" id="projectUrl" placeholder="https://mystore.myshopify.com">
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-outline" data-close="addProjectModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h2>Delete Project <button class="close-modal" data-close="deleteModal">&times;</button></h2>
+      <p class="desc" style="margin-bottom: 24px;">Are you sure? This action cannot be undone. The embed code will stop working immediately.</p>
+      <div class="btn-group">
+        <button class="btn btn-outline" data-close="deleteModal">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal">
+      <h2>Add New User <button class="close-modal" data-close="addUserModal">&times;</button></h2>
+      <form id="addUserForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="newUserName" placeholder="Bayzid Bustami" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="newUserEmail" placeholder="user@shopcontrol.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="newUserPassword" placeholder="Minimum 6 characters" required>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="newUserRole">
+            <option value="user">User (Standard Access)</option>
+            <option value="super_admin">Super Admin (Full Access)</option>
+          </select>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-outline" data-close="addUserModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
