@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const { kv } = require('@vercel/kv');
 
 const app = express();
 const PORT = 3500;
@@ -44,7 +45,19 @@ app.use('/dashboard', express.static(path.join(__dirname, '..', 'dashboard')));
 app.use('/embed', express.static(path.join(__dirname, '..', 'embed')));
 
 // ============ HELPERS ============
-function readDB() {
+async function readDB() {
+  if (isProduction && process.env.KV_REST_API_URL) {
+    try {
+      const data = await kv.get('shopify_controller_db');
+      if (data) {
+        global.inMemoryDB = data; // Keep in-memory sync
+        return data;
+      }
+    } catch (err) {
+      console.error('Vercel KV Read error:', err.message);
+    }
+  }
+
   if (global.inMemoryDB) {
     return global.inMemoryDB;
   }
@@ -59,8 +72,18 @@ function readDB() {
   return DEFAULT_DB;
 }
 
-function writeDB(data) {
+async function writeDB(data) {
   global.inMemoryDB = data; // Always keep in-memory sync
+  
+  if (isProduction && process.env.KV_REST_API_URL) {
+    try {
+      await kv.set('shopify_controller_db', data);
+      return;
+    } catch (err) {
+      console.error('Vercel KV Write error:', err.message);
+    }
+  }
+
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {
@@ -107,9 +130,9 @@ function getDefaultSettings() {
 }
 
 // ============ AUTH ROUTES ============
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-  const db = readDB();
+  const db = await readDB();
   const user = db.users.find(u => u.email === email && u.password === password);
   if (!user) {
     return res.status(401).json({ error: 'Invalid email or password' });
@@ -119,7 +142,7 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 // Simple auth middleware
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -128,7 +151,7 @@ function authMiddleware(req, res, next) {
   try {
     const decoded = Buffer.from(token, 'base64').toString('utf-8');
     const userId = decoded.split(':')[0];
-    const db = readDB();
+    const db = await readDB();
     const user = db.users.find(u => u.id === userId);
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
     req.userId = userId;
@@ -140,17 +163,17 @@ function authMiddleware(req, res, next) {
 }
 
 // ============ PROJECT ROUTES ============
-app.get('/api/projects', authMiddleware, (req, res) => {
-  const db = readDB();
+app.get('/api/projects', authMiddleware, async (req, res) => {
+  const db = await readDB();
   const userProjects = db.projects.filter(p => p.userId === req.userId);
   res.json(userProjects);
 });
 
-app.post('/api/projects', authMiddleware, (req, res) => {
+app.post('/api/projects', authMiddleware, async (req, res) => {
   const { name, url } = req.body;
   if (!name) return res.status(400).json({ error: 'Project name is required' });
 
-  const db = readDB();
+  const db = await readDB();
   const projectId = generateId();
   const project = {
     id: projectId,
@@ -161,19 +184,19 @@ app.post('/api/projects', authMiddleware, (req, res) => {
     settings: getDefaultSettings()
   };
   db.projects.push(project);
-  writeDB(db);
+  await writeDB(db);
   res.status(201).json(project);
 });
 
-app.get('/api/projects/:id', authMiddleware, (req, res) => {
-  const db = readDB();
+app.get('/api/projects/:id', authMiddleware, async (req, res) => {
+  const db = await readDB();
   const project = db.projects.find(p => p.id === req.params.id && p.userId === req.userId);
   if (!project) return res.status(404).json({ error: 'Project not found' });
   res.json(project);
 });
 
-app.put('/api/projects/:id/settings', authMiddleware, (req, res) => {
-  const db = readDB();
+app.put('/api/projects/:id/settings', authMiddleware, async (req, res) => {
+  const db = await readDB();
   const projectIndex = db.projects.findIndex(p => p.id === req.params.id && p.userId === req.userId);
   if (projectIndex === -1) return res.status(404).json({ error: 'Project not found' });
 
@@ -181,23 +204,23 @@ app.put('/api/projects/:id/settings', authMiddleware, (req, res) => {
     ...db.projects[projectIndex].settings,
     ...req.body
   };
-  writeDB(db);
+  await writeDB(db);
   res.json(db.projects[projectIndex]);
 });
 
-app.delete('/api/projects/:id', authMiddleware, (req, res) => {
-  const db = readDB();
+app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
+  const db = await readDB();
   const projectIndex = db.projects.findIndex(p => p.id === req.params.id && p.userId === req.userId);
   if (projectIndex === -1) return res.status(404).json({ error: 'Project not found' });
 
   db.projects.splice(projectIndex, 1);
-  writeDB(db);
+  await writeDB(db);
   res.json({ message: 'Project deleted' });
 });
 
 // ============ SCAN ENDPOINT (embed script reports site data) ============
-app.post('/api/embed/:projectId/scan', (req, res) => {
-  const db = readDB();
+app.post('/api/embed/:projectId/scan', async (req, res) => {
+  const db = await readDB();
   const projectIndex = db.projects.findIndex(p => p.id === req.params.projectId);
   if (projectIndex === -1) return res.status(404).json({ error: 'Project not found' });
 
@@ -250,24 +273,24 @@ app.post('/api/embed/:projectId/scan', (req, res) => {
     project.settings.passwordProtection.detectedPages = existingPages;
   }
 
-  writeDB(db);
+  await writeDB(db);
   res.json({ success: true });
 });
 
 // ============ USER & PROFILE MANAGEMENT ROUTES ============
 
 // Get all users (Super Admin only)
-app.get('/api/users', authMiddleware, (req, res) => {
+app.get('/api/users', authMiddleware, async (req, res) => {
   if (req.user.role !== 'super_admin') {
     return res.status(403).json({ error: 'Only super admin can access user management' });
   }
-  const db = readDB();
+  const db = await readDB();
   const safeUsers = db.users.map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role || 'user' }));
   res.json(safeUsers);
 });
 
 // Create new user (Super Admin only)
-app.post('/api/users', authMiddleware, (req, res) => {
+app.post('/api/users', authMiddleware, async (req, res) => {
   if (req.user.role !== 'super_admin') {
     return res.status(403).json({ error: 'Only super admin can create users' });
   }
@@ -275,7 +298,7 @@ app.post('/api/users', authMiddleware, (req, res) => {
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Name, email, and password are required' });
   }
-  const db = readDB();
+  const db = await readDB();
   if (db.users.find(u => u.email === email)) {
     return res.status(400).json({ error: 'User with this email already exists' });
   }
@@ -287,33 +310,33 @@ app.post('/api/users', authMiddleware, (req, res) => {
     role: role || 'user'
   };
   db.users.push(newUser);
-  writeDB(db);
+  await writeDB(db);
   res.status(201).json({ id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role });
 });
 
 // Delete user (Super Admin only)
-app.delete('/api/users/:id', authMiddleware, (req, res) => {
+app.delete('/api/users/:id', authMiddleware, async (req, res) => {
   if (req.user.role !== 'super_admin') {
     return res.status(403).json({ error: 'Only super admin can delete users' });
   }
   if (req.params.id === req.userId) {
     return res.status(400).json({ error: 'You cannot delete yourself' });
   }
-  const db = readDB();
+  const db = await readDB();
   const userIndex = db.users.findIndex(u => u.id === req.params.id);
   if (userIndex === -1) return res.status(404).json({ error: 'User not found' });
   db.users.splice(userIndex, 1);
-  writeDB(db);
+  await writeDB(db);
   res.json({ message: 'User deleted successfully' });
 });
 
 // Change own password (All authenticated users)
-app.put('/api/profile/password', authMiddleware, (req, res) => {
+app.put('/api/profile/password', authMiddleware, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   if (!currentPassword || !newPassword) {
     return res.status(400).json({ error: 'Current and new password are required' });
   }
-  const db = readDB();
+  const db = await readDB();
   const userIndex = db.users.findIndex(u => u.id === req.userId);
   if (userIndex === -1) return res.status(404).json({ error: 'User not found' });
   
@@ -322,13 +345,13 @@ app.put('/api/profile/password', authMiddleware, (req, res) => {
   }
   
   db.users[userIndex].password = newPassword;
-  writeDB(db);
+  await writeDB(db);
   res.json({ message: 'Password updated successfully' });
 });
 
 // ============ PUBLIC EMBED API ============
-app.get('/api/embed/:projectId', (req, res) => {
-  const db = readDB();
+app.get('/api/embed/:projectId', async (req, res) => {
+  const db = await readDB();
   const project = db.projects.find(p => p.id === req.params.projectId);
   if (!project) return res.status(404).json({ error: 'Project not found' });
 
