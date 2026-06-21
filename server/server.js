@@ -347,7 +347,7 @@ app.get('/', (req, res) => {
   res.redirect('/dashboard');
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`\n  Shopify Controller Server running!`);
     console.log(`  Dashboard: http://localhost:${PORT}/dashboard`);
