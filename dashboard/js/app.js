@@ -53,10 +53,15 @@
 
   // ============ INIT ============
   function init() {
+    // Immediately set correct page visibility underneath preloader to prevent flickering
+    if (authToken && currentUser) {
+      showDashboard();
+    } else {
+      showLogin();
+    }
+    bindEvents();
     runPreloader(() => {
-      if (authToken && currentUser) showDashboard();
-      else showLogin();
-      bindEvents();
+      // System fully loaded
     });
   }
 
