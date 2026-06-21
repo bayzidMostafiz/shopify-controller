@@ -19,6 +19,7 @@
   let protectedPages = [];   // Manual pages
   let detectedSections = []; // Auto-detected from site
   let detectedPages = [];    // Auto-detected from site
+  let allProjects = [];      // Cache of all projects
 
   // DOM refs
   const loginPage = document.getElementById('loginPage');
@@ -119,14 +120,49 @@
   }
 
   // ============ PROJECTS ============
+  async function loadStats() {
+    try {
+      const res = await fetch(`${API_BASE}/api/stats`, { headers: apiHeaders() });
+      if (!res.ok) throw new Error('Failed to load stats');
+      const data = await res.json();
+      document.getElementById('statTotalProjects').textContent = data.totalProjects;
+      document.getElementById('statActiveProjects').textContent = data.activeProjects;
+      document.getElementById('statTotalUsers').textContent = data.totalUsers;
+    } catch (err) {
+      console.error('Failed to load stats:', err.message);
+    }
+  }
+
   async function loadProjects() {
     try {
       const res = await fetch(`${API_BASE}/api/projects`, { headers: apiHeaders() });
       if (res.status === 401) { logout(); return; }
-      renderProjects(await res.json());
+      allProjects = await res.json();
+      loadStats();
+      
+      // Keep search value if already typing, otherwise clear
+      const searchVal = document.getElementById('projectSearchInput').value.trim();
+      if (searchVal) {
+        handleProjectSearch();
+      } else {
+        renderProjects(allProjects);
+      }
     } catch (err) {
       showToast('Failed to load projects', 'error');
     }
+  }
+
+  function handleProjectSearch() {
+    const query = document.getElementById('projectSearchInput').value.trim().toLowerCase();
+    if (!query) {
+      renderProjects(allProjects);
+      return;
+    }
+    const filtered = allProjects.filter(p => 
+      p.name.toLowerCase().includes(query) || 
+      (p.url && p.url.toLowerCase().includes(query))
+    );
+    renderProjects(filtered);
   }
 
   function renderProjects(projects) {
@@ -770,6 +806,9 @@
         e.target.value = '';
       }
     });
+
+    // Project Search Input event
+    document.getElementById('projectSearchInput').addEventListener('input', handleProjectSearch);
 
     // Refresh buttons
     document.getElementById('refreshSectionsBtn').addEventListener('click', refreshProjectData);

@@ -371,6 +371,38 @@ app.put('/api/profile/password', authMiddleware, async (req, res) => {
   res.json({ message: 'Password updated successfully' });
 });
 
+// Helper for backend stats calculations
+function getBackendActiveFeaturesCount(s) {
+  let c = 0;
+  if (s.cartButton && s.cartButton.disabled) c++;
+  if (s.checkout && s.checkout.disabled) c++;
+  if (s.announcement && s.announcement.enabled) c++;
+  if (s.customCSS && s.customCSS.enabled) c++;
+  if (s.popup && s.popup.enabled) c++;
+  if (s.passwordProtection && s.passwordProtection.enabled) c++;
+  if (s.homeBlocks && s.homeBlocks.hiddenSectionIds) c += s.homeBlocks.hiddenSectionIds.length;
+  return c;
+}
+
+// Get stats summary (All authenticated users)
+app.get('/api/stats', authMiddleware, async (req, res) => {
+  const db = await readDB();
+  const userProjects = db.projects.filter(p => p.userId === req.userId);
+  
+  let activeCount = 0;
+  userProjects.forEach(project => {
+    if (getBackendActiveFeaturesCount(project.settings) > 0) {
+      activeCount++;
+    }
+  });
+
+  res.json({
+    totalProjects: userProjects.length,
+    activeProjects: activeCount,
+    totalUsers: db.users.length
+  });
+});
+
 // ============ PUBLIC EMBED API ============
 app.get('/api/embed/:projectId', async (req, res) => {
   const db = await readDB();
