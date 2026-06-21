@@ -53,9 +53,63 @@
 
   // ============ INIT ============
   function init() {
-    if (authToken && currentUser) showDashboard();
-    else showLogin();
-    bindEvents();
+    runPreloader(() => {
+      if (authToken && currentUser) showDashboard();
+      else showLogin();
+      bindEvents();
+    });
+  }
+
+  function runPreloader(callback) {
+    const preloader = document.getElementById('preloader');
+    const progressBar = document.getElementById('progressBar');
+    const preloaderText = document.getElementById('preloaderText');
+    const preloaderPercent = document.getElementById('preloaderPercent');
+    
+    if (!preloader) {
+      callback();
+      return;
+    }
+
+    const phases = [
+      { text: "ESTABLISHING SECURE PROTOCOLS..." },
+      { text: "DECRYPTING DATABASE KEYS..." },
+      { text: "PARSING SYSTEM BLOCKS..." },
+      { text: "BYPASSING FIREWALLS..." },
+      { text: "SYSTEM STATUS: ACTIVE!" }
+    ];
+
+    let currentPhase = 0;
+    let progress = 0;
+    const intervalTime = 20; // ms
+    const totalTime = 2000; // 2 seconds
+    const increment = (100 / (totalTime / intervalTime));
+
+    const progressInterval = setInterval(() => {
+      progress += increment;
+      if (progress >= 100) progress = 100;
+      
+      if (progressBar) progressBar.style.width = `${progress}%`;
+      if (preloaderPercent) preloaderPercent.textContent = `${Math.floor(progress).toString().padStart(2, '0')}%`;
+      
+      const phaseIndex = Math.min(Math.floor((progress / 100) * phases.length), phases.length - 1);
+      if (phaseIndex !== currentPhase && preloaderText) {
+        currentPhase = phaseIndex;
+        preloaderText.textContent = phases[currentPhase].text;
+      }
+
+      if (progress >= 100) {
+        clearInterval(progressInterval);
+        setTimeout(() => {
+          preloader.style.transition = 'opacity 0.4s ease-out';
+          preloader.style.opacity = '0';
+          setTimeout(() => {
+            preloader.style.display = 'none';
+            callback();
+          }, 400);
+        }, 300);
+      }
+    }, intervalTime);
   }
 
   // ============ AUTH ============
@@ -174,10 +228,10 @@
       const active = countActiveFeatures(project.settings);
       card.innerHTML = `
         <div class="card-header">
-          <div class="card-icon">🏪</div>
+          <div class="card-icon"><i class="fa-solid fa-terminal"></i></div>
           <div class="card-actions">
-            <button class="embed-btn" title="Embed Code" data-id="${project.id}">📋</button>
-            <button class="delete-btn" title="Delete" data-id="${project.id}">🗑️</button>
+            <button class="embed-btn" title="Embed Code" data-id="${project.id}"><i class="fa-solid fa-code"></i></button>
+            <button class="delete-btn" title="Delete" data-id="${project.id}"><i class="fa-solid fa-trash-can"></i></button>
           </div>
         </div>
         <h3>${esc(project.name)}</h3>

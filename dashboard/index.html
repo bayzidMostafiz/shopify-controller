@@ -5,11 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShopController - Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+  <!-- ============ PRELOADER ============ -->
+  <div id="preloader">
+    <div class="terminal-loader">
+      <div class="cyber-logo">⚡ SYSTEM_BOOT ⚡</div>
+      <div id="preloaderText" class="preloader-text">INITIALIZING MATRIX...</div>
+      <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <div id="preloaderPercent" class="preloader-percent">00%</div>
+    </div>
+  </div>
 
   <!-- ============ LOGIN PAGE ============ -->
   <div id="loginPage" class="login-wrapper">
