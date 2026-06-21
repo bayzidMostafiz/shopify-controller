@@ -1,11 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const PORT = 3500;
+
+function generateId() {
+  return Math.random().toString(36).substring(2, 10);
+}
 
 const DEFAULT_DB = {
   users: [
@@ -152,7 +155,7 @@ app.post('/api/projects', authMiddleware, (req, res) => {
   if (!name) return res.status(400).json({ error: 'Project name is required' });
 
   const db = readDB();
-  const projectId = uuidv4().split('-')[0];
+  const projectId = generateId();
   const project = {
     id: projectId,
     userId: req.userId,
@@ -284,7 +287,7 @@ app.post('/api/users', authMiddleware, (req, res) => {
     return res.status(400).json({ error: 'User with this email already exists' });
   }
   const newUser = {
-    id: uuidv4().split('-')[0],
+    id: generateId(),
     name,
     email,
     password,
